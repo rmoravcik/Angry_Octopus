@@ -55,6 +55,8 @@ volatile mode_t mode = SWITCH_FLIP_FLOP_SLOW;
 volatile uint8_t angriness = 0;
 volatile uint8_t duration = 0;
 
+volatile unsigned long alive = 0;
+
 void setup()
 {
   Serial.begin(115200);
@@ -70,6 +72,7 @@ void setup()
   }
 
   randomSeed(analogRead(0));
+  alive = millis();
 }
 
 void printMode(mode_t mode)
@@ -151,6 +154,8 @@ void checkAngriness()
   Serial.print(duration);
   Serial.print(", ");
   printMode(mode);
+
+  alive = millis();
 }
 
 mode_t checkMode(mode_t mode)
@@ -469,5 +474,13 @@ void loop()
       break;
     default:
       break;
+  }
+
+  if ((millis() - alive) > (60000UL))
+  {
+     Serial.println("Bye bye...");
+     pinMode(2, OUTPUT);
+     digitalWrite(2, HIGH);
+     while (1) {}
   }
 }
